@@ -1,0 +1,32 @@
+.fb-save-4-later {
+    /*-moz-user-select: none;
+    background: #2A49A5;
+    border: 1px solid #082783;
+    box-shadow: 0 1px #4C6BC7 inset;
+    color: white !important;
+    padding: 3px 5px;
+    text-decoration: none;
+    font-weight: bold !important;
+    text-shadow: 0 -1px 0 #082783;
+    font: 12px Verdana, sans-serif;
+    margin: 0 5px;*/
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    margin: 0 5px;
+}
+.fb-save-4-later:hover {
+    opacity: 0.8;
+    /*text-decoration: none;*/
+}
+.fb-save-4-later.saved {
+    /*background-color: #de5200;
+    border: 1px solid #ea5200;
+    box-shadow: 0 1px #ce5200 inset;*/
+    color: #999 !important;
+}
+/* User Profile */
+._3dp._29k .fb-save-4-later {
+    /*right: 30px;
+    position: absolute;
+    margin-top: -5px;*/
+    margin: 0 !important;
+}

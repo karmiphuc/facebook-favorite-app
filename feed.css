@@ -1,0 +1,120 @@
+/*!
+  FbSave4Later::Feed.css v1.0.2
+  Copyright 2014 Karmi Phuc. All rights reserved.
+  Licensed under the LGPL License.
+  http://www.gnu.org/copyleft/lesser.html
+*/
+body {
+  font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+}
+#header {
+  border-bottom: 1px solid #E5E5E5;
+  padding-right: 15px;
+  padding-left: 15px;
+  position: absolute;
+  z-index: 9999;
+
+   background-color:#4C66A4;
+  width:100%;
+  height:80px;
+  box-shadow: 0px 1px 50px #4C66A4;
+  position:fixed;
+  top:0px;
+  color: white;
+}
+#header h1 {
+  font-size: 30px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+#setting {
+  position: absolute;
+  top: 0px;
+  right: 20px;
+  padding: 15px 20px;
+}
+#setting .version {
+  text-align: right;
+}
+.button-lnk {
+  display: inline;
+padding: .2em .6em .3em;
+font-size: 75%;
+font-weight: 700;
+line-height: 1;
+color: #FFF;
+text-align: center;
+white-space: nowrap;
+vertical-align: baseline;
+text-decoration: none;
+
+background-color: #4C66A4;
+border-radius: 0px !important;
+border-top-left-radius: 0px !important;
+border-top-right-radius: 0px !important;
+border-bottom-left-radius: 0px !important;
+border-bottom-right-radius: 0px !important;
+}
+.button-lnk:hover {
+  background-color: white;
+  color: #4C66A4;
+}
+#savedList {
+  margin: 0 auto;
+}
+#savedList a {
+  padding: 0 5px;
+  line-height: 20px;
+}
+#savedList div {
+  height: 600px;
+  width: 420px;
+  margin: 5px;
+  /*padding: 0 10px;*/
+  border-top: 2px solid #9f9f9f;
+}
+/*ul,ol {  list-style: none;  cursor: pointer;}*/
+li {
+  margin: 20px 0;
+  padding: 10px;
+  border-left: 3px solid #5af;
+  border-bottom: 1px solid rgba(70, 110, 222, 0.25);
+  font-size: 16px;
+}
+.fb-post.fb_iframe_widget {
+position: relative;
+display: block;
+width: 500px;
+height: auto;
+}
+#content {
+ margin:100px auto 0 auto;
+}
+#content .search-box{ margin:0 auto;width:200px;}
+.removeLnk {float:right;}
+iframe {
+  width: 420px !important;
+  height: 600px !important;
+}
+#search
+{
+background: #FFF url('search.ico') no-repeat;
+background-size:25px 25px;
+background-position:96% 62%;
+border: 2px solid rgb(173, 204, 204);
+height: 31px;
+width: 193px;
+box-shadow: 0px 0px 27px rgb(204, 204, 204) inset;
+transition:500ms all ease;
+padding:3px 3px 3px 3px;
+}
+
+#search:hover, #search:focus
+{
+width:237px;
+transition:500ms all ease;
+background: #FFF url('search.ico') no-repeat right;
+background-size:25px 25px;
+background-position:96% 62%;
+padding:3px 32px 3px 3px;
+}
