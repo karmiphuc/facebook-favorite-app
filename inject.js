@@ -15,12 +15,12 @@ function injectLinks() {
 			mode = "profile";
 			data = document.querySelectorAll('[id^=tl_unit_]');
 			len = data.length;
-			
+
 			if (len === 0) {
 				designMode = "new";
 				data = document.querySelectorAll('.timelineUnitContainer[id^=u_jsonp_]');
 				len = data.length;
-				
+
 				if (len === 0) {
 					mode = "news";
 					designMode = "new";
@@ -29,7 +29,7 @@ function injectLinks() {
 					if (len === 0) {
 						data = document.querySelectorAll('.userContentWrapper');
 						len = data.length;
-						// if (len === 0) {			
+						// if (len === 0) {
 							// designMode = "old";
 							// mode = "profile";
 							// data = document.querySelectorAll('[id^=tl_unit_]');
@@ -38,7 +38,7 @@ function injectLinks() {
 					}
 				}
 			}
-		
+
         }
 
         if (typeof storage == 'undefined') var storage = null;
@@ -58,7 +58,7 @@ function injectLinks() {
                         if (!injectionWrapper) {
 							injectionWrapper = d.querySelector('.fcg a._5pcq');
 							if (!injectionWrapper) continue;
-							if (typeof injectionWrapper.length == 'undefined') injectionWrapper = [injectionWrapper];
+							if (injectionWrapper && typeof injectionWrapper.length == 'undefined') injectionWrapper = [injectionWrapper];
 							href = injectionWrapper;
 							injectionWrapper = d.querySelector('._5vsi');
 						} else {
@@ -111,31 +111,62 @@ function injectLinks() {
                         else descUser = d.querySelector('.fcg a').innerHTML;
                         ahref.setAttribute('data-user', descUser);
 
-                        var descText;
+                        var descText, descTextWrapper;
                         if (isNewsFeed) {
                             if (isNewDesign) {
-                                descText = d.querySelector('.userContentWrapper .userContent');
-                                if (typeof descText == 'undefined' || !descText) {
-                                    descText = d.querySelector('._6nl:not(._6td)').textContent.trim();
-                                } else descText = descText.textContent.trim();
+                                descTextWrapper = d.querySelector('.userContentWrapper ._5pbx.userContent');
+                                if (typeof descTextWrapper == 'undefined' || !descTextWrapper) {
+                                    descTextWrapper = d.querySelector('.userContentWrapper .userContent');
+                                    if (typeof descTextWrapper == 'undefined' || !descTextWrapper) {
+                                        descTextWrapper = d.querySelector('._6nl:not(._6td)');
+                                    }
+                                }
+                                descText = descTextWrapper.textContent.trim();
                             } else {
-                                descText = d.querySelector('.userContentWrapper ._5pbx.userContent');
-                                if (typeof descText == 'undefined' || !descText) {
-                                    descText = d.querySelector('._5pbw');
-                                    if (typeof descText != 'undefined' && descText) descText = descText.textContent.substr(0,1000);
+                                descTextWrapper = d.querySelector('.userContentWrapper ._5pbx.userContent');
+                                if (typeof descTextWrapper == 'undefined' || !descTextWrapper) {
+                                    descTextWrapper = d.querySelector('._5pbw');
+                                    if (typeof descTextWrapper != 'undefined' && descTextWrapper) descText = descTextWrapper.textContent.substr(0,1000);
                                     else descText = "";
                                 } else {
-                                    descText = descText.innerText.substr(0,1000);
+                                    descText = descTextWrapper.innerText.substr(0,5000);
                                 }
                             }
                         } else {
-                            descText = d.getElementsByClassName('userContent')[0] || d.querySelector('._3dp._29k ._1_s');
-                            if (typeof descText != 'undefined' && descText) {
+                            descTextWrapper = d.getElementsByClassName('userContent')[0] || d.querySelector('._3dp._29k ._1_s');
+                            if (typeof descTextWrapper != 'undefined' && descTextWrapper) {
                                 //descText = data[i].querySelector('._3dp._29k ._1_s')[0];
-                                descText = descText.textContent.substr(0,1000).trim();
+                                descText = descTextWrapper.textContent.substr(0,5000).trim();
                             }
                         }
                         ahref.setAttribute('data-text', descText);
+
+                        var descPreview = descTextWrapper.nextSibling;
+                        var htmlPreview;
+                        // Easy case: Link preview
+                        if (descPreview && descPreview.innerHTML.trim() != '') {
+                            htmlPreview = descPreview.innerHTML.trim();
+                        }
+                        else {
+                            // Hard case: FB Post share preview
+                            descPreview = descTextWrapper.parentNode;
+                            var retry = 1;
+                            while (descPreview.className.indexOf('userContentWrapper') == -1 && retry++ < 4) {
+                                descPreview = descPreview.parentNode;
+                            }
+                            // Get both TEXT & PHOTO
+                            var descPreviewSibling = descPreview.nextSibling;
+                            if (descPreviewSibling) {
+                                htmlPreview = descPreviewSibling.innerHTML;
+                                if (descPreviewSibling = descPreviewSibling.nextSibling) htmlPreview += descPreviewSibling.innerHTML;
+                            }
+                        }
+                        if (!htmlPreview) htmlPreview = '';
+                        ahref.setAttribute('data-preview', encodeURIComponent(htmlPreview));
+
+                        var isPublic = d.querySelector('.lock.img.sp_5bj5js.sx_25f2b2') || 0;
+                        if (isPublic) isPublic = 1;
+                        ahref.setAttribute('data-public', isPublic);
 
                         ahref.addEventListener('click', function (o, e) {
                             if (this.innerHTML.indexOf('Saved')>-1) return false;
@@ -143,6 +174,8 @@ function injectLinks() {
                             var fbLink = this.getAttribute('data-link');
                             var fbUser = this.getAttribute('data-user');
                             var fbText = this.getAttribute('data-text');
+                            var fbPreview = this.getAttribute('data-preview');
+                            var fbPublic = this.getAttribute('data-public');
                             chrome.storage.local.get('fbSaveLater', function (o) {
                                 if (chrome.runtime.lastError) {
                                     console.log("ERROR - GET failed: " + chrome.runtime.lastError.message);
@@ -156,9 +189,13 @@ function injectLinks() {
 
                                 if (typeof savedList == 'undefined' || !savedList || savedList == null || savedList == '') savedList = [];
                                 savedList.push(fbLink);
-                                if (typeof descObj == 'undefined' || !descObj || descObj == null || descObj == '') descObj = {text: {}, src: {}};
+                                if (typeof descObj == 'undefined' || !descObj || descObj == null || descObj == '') descObj = {text: {}, src: {}, preview: {}, public: {}};
                                 descObj.text[fbLink] = fbText;
                                 descObj.src[fbLink] = fbUser;
+                                if (typeof descObj.preview == 'undefined') descObj.preview = {};
+                                descObj.preview[fbLink] = fbPreview || '';
+                                if (typeof descObj.public == 'undefined') descObj.public = {};
+                                descObj.public[fbLink] = fbPublic;
 
                                 chrome.storage.local.set({
                                     'fbSaveLater': {links: savedList, desc: descObj}

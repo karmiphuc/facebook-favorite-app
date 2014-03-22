@@ -9,13 +9,13 @@ var SaveFbLater = {
         if (chrome.runtime.lastError) {
                console.log("ERROR: " + chrome.runtime.lastError.message);
         }
-        self.myStorage = o.fbSaveLater||{links:[],desc:{text: {}, src: {}}};
+        self.myStorage = o.fbSaveLater||{links:[],desc:{text: {}, src: {}, preview: {}}};
         if (self.myStorage) self.initComplete = true;
         else self.initComplete = false;
 
         if (typeof mode == 'undefined' || mode != 'feed') self.getSavedList();
         else if (mode == 'feed') {
-          self.showFeed();
+          self.showFeed('manual');
         }
       });
     },
@@ -64,24 +64,48 @@ var SaveFbLater = {
       };
     },
 
-    showFeed: function() {
+    showFeed: function(mode) {
+      if (typeof mode == 'undefined' || (mode != 'embed' && mode != 'manual')) mode = 'embed';
       var savedList = this.myStorage.links;
 
       var i = 0;
       var len = savedList.length;
       var ulEle = document.getElementById('savedList');
       ulEle.innerHTML = '';
-      for (var i = 0; i < len; ++i) {
-        var item = savedList[i];
-        if (item != null && item != '') {
-          var listEle = document.createElement('div');
-          listEle.className = "pure-u-1-3 fb-post";
-          listEle.setAttribute("data-href",item);
-          listEle.setAttribute("data-width",420);
-          //listEle.appendChild(removeItemBtn);
-          ulEle.appendChild(listEle);
-        }
-      };
+      var wrapper;
+
+      if (mode === 'embed') {
+        for (var i = 0; i < len; ++i) {
+          var item = savedList[i];
+          if (item != null && item != '') {
+            var listEle = document.createElement('div');
+            listEle.className = "fb-post";
+            listEle.setAttribute("data-href",item);
+            listEle.setAttribute("data-width",480);
+            //listEle.appendChild(removeItemBtn);
+            ulEle.appendChild(listEle);
+          }
+        };
+      } else {
+        var descTable = this.myStorage.desc;
+        for (var i = 0; i < len; ++i) {
+          var item = savedList[i];
+          if (item != null && item != '') {
+            var listEle = document.createElement('div');
+            if (typeof descTable.public[item] != 'undefined' && typeof descTable.preview[item] != 'undefined') {
+              //if (typeof descTable.preview[item] != 'undefined')
+              var previewHtml = decodeURIComponent(descTable.preview[item]);
+              listEle.className = "_6ns _5jmm fb-post pure-u-1-2";
+              listEle.innerHTML = '<div class="_4q_ _6kq"><h2 class="_6nl mrm"><span class="fwb"><a href="'+item+'" target="_blank">'+descTable.src[item]+'</a></span></h2><p class="_6nm">'+descTable.text[item]+'</p><div class="_6kv">'+previewHtml+'</div></div>';
+            } else {
+              listEle.className = "fb-post";
+              listEle.setAttribute("data-href",item);
+              listEle.setAttribute("data-width",480);
+            }
+            ulEle.appendChild(listEle);
+          }
+        };
+      }
     },
 
     clear: function() {

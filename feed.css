@@ -61,17 +61,31 @@ border-bottom-right-radius: 0px !important;
 }
 #savedList {
   margin: 0 auto;
+  width: 1050px;
 }
 #savedList a {
   padding: 0 5px;
   line-height: 20px;
 }
-#savedList div {
-  height: 600px;
-  width: 420px;
+#savedList.feeds-wrapper a {
+  padding: 0 !important;
+}
+#savedList ._6kq {
+  border-top: 2px solid #d3d6db;
+  border-bottom: 2px solid #d3d6db;
+}
+#savedList .fb-post {
+  letter-spacing: 0;
+  min-height: 250px;
+  height: 610px;
+  max-height: 1000px;
+  width: 490px;
   margin: 5px;
   /*padding: 0 10px;*/
-  border-top: 2px solid #9f9f9f;
+  /*border-top: 2px solid #9f9f9f;*/
+}
+#savedList ._6ns._5jmm {
+  height: auto !important;
 }
 /*ul,ol {  list-style: none;  cursor: pointer;}*/
 li {
