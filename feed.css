@@ -111,11 +111,14 @@ body {
   width: auto !important;
 }
 #savedList img {
-  height: inherit !important;
+  height: initial !important;
   max-width: 400px !important;
 }
 #savedList .text_exposed_hide {
   display: none !important;
+}
+#savedList .text_exposed_show, .text_exposed .text_exposed_hide {
+  display: inline !important;
 }
 .warning-header {
   text-align: center;
@@ -138,6 +141,7 @@ height: auto;
 }
 #container {
  margin:100px auto 0 auto;
+ width: 1295px;
 }
 #container .search-box{ margin:20px auto;width:200px;}
 .removeLnk {float:right;}

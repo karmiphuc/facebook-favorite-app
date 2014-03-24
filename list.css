@@ -44,7 +44,7 @@ body {
 }
 #savedList a {
   padding: 0 5px;
-  line-height: 20px;
+  line-height: 15px;
 }
 #savedList .fb-post, #savedList .post {
   letter-spacing: 0;
@@ -71,7 +71,13 @@ body {
 #savedList .text_exposed_hide {
   display: none !important;
 }
-#container .search-box{ margin:20px auto;width:200px;}
+#savedList .text_exposed_show, .text_exposed .text_exposed_hide {
+  display: inline !important;
+}
+.move-top {position: absolute;bottom: 10px;right: 0;}
+.move-top a{color:#fff;}
+.move-top a:target{transition:1000ms all ease;}
+.list-view .search-box{ margin:10px auto 0 auto;text-align: center;}
 .removeLnk {float:right;}
 #search
 {
@@ -115,7 +121,6 @@ padding:3px 32px 3px 3px;
 .meta-author {
     box-sizing: border-box;
     color: rgb(51, 51, 51);
-    height: 34px;
     text-decoration: none solid rgb(51, 51, 51);
     /*width: 230.5px;*/
 /*    border: 0px none rgb(51, 51, 51);*/
@@ -131,6 +136,7 @@ padding:3px 32px 3px 3px;
     background: rgba(0, 0, 0, 0) none repeat scroll 0px 0px / auto padding-box border-box;
     border: 0px none rgb(0, 174, 222);
     outline: rgb(0, 174, 222) none 0px;
+    line-height: 30px !important;
 }/*#A_4, #A_9*/
 
 /*.meta-author strong {
@@ -163,8 +169,10 @@ padding:3px 32px 3px 3px;
     outline: rgb(85, 85, 85) none 0px;
     border-top: 1px solid #EEE;
 }/*#DIV_8*/
-
 .message a{color: #3B5998;}
+.fav-count-wrapper {
+    border-bottom: 1px solid #EEE;
+}
 
 /* LIST */
 @media screen and (min-width: 35.5em) {
@@ -1061,6 +1069,7 @@ h3 {
     /*background: rgb(61, 79, 93);*/
     background: #4C66A4;
     color: #fff;
+    min-width:237px;
 }
 
 .brand-title,

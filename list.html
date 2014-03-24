@@ -7,7 +7,7 @@
     <link href="list.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-      <div class="pure-g">
+      <div class="list-view pure-g">
       <!-- <div id="header">
         <h1>Facebook Favorite - Your List</h1>
         <div id="setting">
@@ -16,6 +16,12 @@
         </div>
       </div> -->
       <div class="sidebar pure-u-1 pure-u-med-1-4">
+        <div class="search-box">
+          <input id="search" type="text" value=""/>
+        </div>
+        <!-- <div class="fav-count-wrapper">
+          <h4>You have <span id="fav-count">0</span> Favorite(s).</h4>
+        </div> -->
           <div class="header">
               <hgroup>
                   <h1 class="brand-title">Facebook Favorite</h1>
@@ -39,11 +45,11 @@
                   </ul>
               </nav>
           </div>
+        <div class="move-top header">
+          <a href="#">Go to Top</a>
+        </div>
       </div>
       <div id="container" class="list-content content pure-u-1 pure-u-med-3-4">
-        <div class="search-box">
-          <input id="search" type="text" value=""/>
-        </div>
         <div id="savedList" class="pure-g-r"></div>
       </div>
     </div>
