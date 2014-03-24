@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', function(){
         reg = RegExp(val, 'i'),
         text;
 
-    var list = document.getElementsByTagName('li');
+    var list = document.getElementsByClassName('list-item post');
     Array.prototype.forEach.call(list, function(el, i){ el.style.display = '';});
 
     Array.prototype.filter.call(list, function(el, i) {
-        text = el.innerText.trim();
+        text = el.children[1].textContent.trim();
         if (!reg.test(text)) el.style.display = 'none';
     });
   });

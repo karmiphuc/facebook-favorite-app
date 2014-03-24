@@ -2,14 +2,14 @@ chrome.contextMenus.create({"title": "List view", "onclick" : function() {
 		chrome.tabs.create({url:chrome.extension.getURL("list.html"),active:true});
 	}}, function() {
 	  if (chrome.extension.lastError) {
-		console.log("Got expected error: " + chrome.extension.lastError.message);
+		console.log("Background: " + chrome.extension.lastError.message);
 	  }
 });
 chrome.contextMenus.create({"title": "Feeds view", "onclick" : function() {
 		chrome.tabs.create({url:chrome.extension.getURL("feed.html"),active:true});
 	}}, function() {
 	  if (chrome.extension.lastError) {
-		console.log("Got expected error: " + chrome.extension.lastError.message);
+		console.log("Background: " + chrome.extension.lastError.message);
 	  }
 });
 

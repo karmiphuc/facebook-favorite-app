@@ -100,15 +100,20 @@ function injectLinks() {
                         ahref.innerHTML = 'Favorite';
                         ahref.setAttribute('data-link', href[0].href);
 
-                        var descUser;
+                        var descUser, descUserWrapper;
                         if (isNewsFeed) {
                             if (isNewDesign) {
-                                descUser = d.querySelector('._6nl:not(._6td) a');
-								if (descUser) descUser = descUser.textContent;
-                                else descUser = d.querySelector('._5pbw .fwn.fcg span').textContent;
-                            } else descUser = d.querySelector('a').innerHTML;
+                                descUserWrapper = d.querySelector('._6nl:not(._6td) a');
+								if (!descUserWrapper) //descUser = descUserWrapper.textContent; else
+                                {
+                                    //descUser = d.querySelector('._5pbw .fwn.fcg span').textContent;
+                                    descUserWrapper = d.querySelector('._5pbw .fwn.fcg span');
+                                }
+                            } else descUserWrapper = d.querySelector('a');
                         }
-                        else descUser = d.querySelector('.fcg a').innerHTML;
+                        else descUserWrapper = d.querySelector('.fcg a');
+                        if (descUserWrapper) descUser = descUserWrapper.textContent;
+                        else descUser = "Unknown source";
                         ahref.setAttribute('data-user', descUser);
 
                         var descText, descTextWrapper;
@@ -121,51 +126,67 @@ function injectLinks() {
                                         descTextWrapper = d.querySelector('._6nl:not(._6td)');
                                     }
                                 }
-                                descText = descTextWrapper.textContent.trim();
+                                //descText = descTextWrapper.textContent.trim();
                             } else {
                                 descTextWrapper = d.querySelector('.userContentWrapper ._5pbx.userContent');
                                 if (typeof descTextWrapper == 'undefined' || !descTextWrapper) {
                                     descTextWrapper = d.querySelector('._5pbw');
-                                    if (typeof descTextWrapper != 'undefined' && descTextWrapper) descText = descTextWrapper.textContent.substr(0,1000);
-                                    else descText = "";
-                                } else {
-                                    descText = descTextWrapper.innerText.substr(0,5000);
                                 }
                             }
                         } else {
                             descTextWrapper = d.getElementsByClassName('userContent')[0] || d.querySelector('._3dp._29k ._1_s');
-                            if (typeof descTextWrapper != 'undefined' && descTextWrapper) {
-                                //descText = data[i].querySelector('._3dp._29k ._1_s')[0];
-                                descText = descTextWrapper.textContent.substr(0,5000).trim();
-                            }
+                            // if (typeof descTextWrapper == 'undefined' || !descTextWrapper) {
+                            //     descTextWrapper = d.querySelector('._5pbw');
+                            // }
+                            // if (typeof descTextWrapper != 'undefined' && descTextWrapper) {
+                            //     //descText = data[i].querySelector('._3dp._29k ._1_s')[0];
+                            //     descText = descTextWrapper.textContent.substr(0,5000).trim();
+                            // }
                         }
-                        ahref.setAttribute('data-text', descText);
+                        if (typeof descTextWrapper != 'undefined' && descTextWrapper) {
+                            //descText = descTextWrapper.textContent.substr(0,1000);
+                            descText = descTextWrapper.innerHTML;
+                        } else descText = "";
+                        ahref.setAttribute('data-text', encodeURIComponent(descText));
 
                         var descPreview = descTextWrapper.nextSibling;
                         var htmlPreview;
                         // Easy case: Link preview
-                        if (descPreview && descPreview.innerHTML.trim() != '') {
+                        if (descPreview && descPreview.textContent.trim() != '') {
                             htmlPreview = descPreview.innerHTML.trim();
                         }
                         else {
                             // Hard case: FB Post share preview
                             descPreview = descTextWrapper.parentNode;
                             var retry = 1;
-                            while (descPreview.className.indexOf('userContentWrapper') == -1 && retry++ < 4) {
+                            while (
+                                (descPreview.className.indexOf('userContentWrapper') == -1 &&
+                                 descPreview.className.indexOf('mtm') == -1)
+                                && retry++ < 4) {
                                 descPreview = descPreview.parentNode;
                             }
                             // Get both TEXT & PHOTO
-                            var descPreviewSibling = descPreview.nextSibling;
-                            if (descPreviewSibling) {
-                                htmlPreview = descPreviewSibling.innerHTML;
-                                if (descPreviewSibling = descPreviewSibling.nextSibling) htmlPreview += descPreviewSibling.innerHTML;
+                            if (descPreview.className.indexOf('mtm') !== -1) {
+                                // Facebook similar posts grouping
+                                htmlPreview = descPreview.innerHTML;
+                            } else {
+                                // Normal posts
+                                var descPreviewSibling = descPreview.nextSibling;
+                                if (descPreviewSibling) {
+                                    htmlPreview = descPreviewSibling.innerHTML;
+                                    if (descPreviewSibling = descPreviewSibling.nextSibling) htmlPreview += descPreviewSibling.innerHTML;
+                                }
                             }
                         }
                         if (!htmlPreview) htmlPreview = '';
-                        ahref.setAttribute('data-preview', encodeURIComponent(htmlPreview));
+                        else {
+                            if (htmlPreview.indexOf('_4-u2 mbl _5us6') > -1) continue;
+                            htmlPreview.replace(/<form[^]+<\/form>/,'');
+                            ahref.setAttribute('data-preview', encodeURIComponent(htmlPreview));
+                        }
 
-                        var isPublic = d.querySelector('.lock.img.sp_5bj5js.sx_25f2b2') || 0;
-                        if (isPublic) isPublic = 1;
+                        //var isPublic = document.querySelector('.sx_d601ff')?-1:(d.querySelector('.sx_25f2b2')?1:0);
+                        var isPublic = (href[0].href.indexOf('/groups/')>-1)?-1:(d.querySelector('.sx_25f2b2')?1:0);
                         ahref.setAttribute('data-public', isPublic);
 
                         ahref.addEventListener('click', function (o, e) {
@@ -189,13 +210,17 @@ function injectLinks() {
 
                                 if (typeof savedList == 'undefined' || !savedList || savedList == null || savedList == '') savedList = [];
                                 savedList.push(fbLink);
-                                if (typeof descObj == 'undefined' || !descObj || descObj == null || descObj == '') descObj = {text: {}, src: {}, preview: {}, public: {}};
+                                if (typeof descObj == 'undefined' || !descObj || descObj == null || descObj == '') {
+                                    descObj = {text: {}, src: {}, preview: {}, public: {}, savedtime: {}};
+                                }
                                 descObj.text[fbLink] = fbText;
                                 descObj.src[fbLink] = fbUser;
                                 if (typeof descObj.preview == 'undefined') descObj.preview = {};
                                 descObj.preview[fbLink] = fbPreview || '';
                                 if (typeof descObj.public == 'undefined') descObj.public = {};
                                 descObj.public[fbLink] = fbPublic;
+                                if (typeof descObj.savedtime == 'undefined') descObj.savedtime = {};
+                                descObj.savedtime[fbLink] = (new Date()).getTime();
 
                                 chrome.storage.local.set({
                                     'fbSaveLater': {links: savedList, desc: descObj}
