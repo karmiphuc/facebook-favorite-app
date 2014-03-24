@@ -58,6 +58,7 @@ body {
 .button-lnk:hover {
   background-color: white;
   color: #4C66A4;
+  text-decoration: none;
 }
 #savedList {
   margin: 0 auto;
@@ -239,3 +240,4 @@ padding:3px 32px 3px 3px;
 }/*#DIV_8*/
 
 .message a{color: #3B5998;}
+.donate-button {background: none;padding: .5em;float:right;}
