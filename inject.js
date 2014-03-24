@@ -3,6 +3,8 @@
   Copyright 2014 Karmi Phuc. All rights reserved.
   Licensed under the LGPL License.
   http://www.gnu.org/copyleft/lesser.html
+  @author Kami.2014.03.24.17:24
+  @version 1.0.6
 */
 function injectLinks() {
     //if (document.getElementsByClassName('fb-save-4-later').length >= 0) {
@@ -150,10 +152,10 @@ function injectLinks() {
                         ahref.setAttribute('data-text', encodeURIComponent(descText));
 
                         var descPreview = descTextWrapper.nextSibling;
-                        var htmlPreview;
+                        var htmlPreview = null;
                         // Easy case: Link preview
-                        if (descPreview && descPreview.textContent.trim() != '') {
-                            htmlPreview = descPreview.innerHTML.trim();
+                        if (descPreview && descPreview.innerHTML && descPreview.innerHTML.length > 11) {
+                            htmlPreview = descPreview.innerHTML;
                         }
                         else {
                             // Hard case: FB Post share preview
@@ -178,8 +180,9 @@ function injectLinks() {
                                 }
                             }
                         }
-                        if (!htmlPreview) htmlPreview = '';
-                        else {
+                        //if (!htmlPreview) htmlPreview = '';
+                        //else {
+                        if (htmlPreview) {
                             if (htmlPreview.indexOf('_4-u2 mbl _5us6') > -1) continue;
                             htmlPreview.replace(/<form[^]+<\/form>/,'');
                             ahref.setAttribute('data-preview', encodeURIComponent(htmlPreview));
@@ -211,14 +214,14 @@ function injectLinks() {
                                 if (typeof savedList == 'undefined' || !savedList || savedList == null || savedList == '') savedList = [];
                                 savedList.push(fbLink);
                                 if (typeof descObj == 'undefined' || !descObj || descObj == null || descObj == '') {
-                                    descObj = {text: {}, src: {}, preview: {}, public: {}, savedtime: {}};
+                                    descObj = {text: {}, src: {}, preview: {}, isPublic: {}, savedtime: {}};
                                 }
                                 descObj.text[fbLink] = fbText;
                                 descObj.src[fbLink] = fbUser;
                                 if (typeof descObj.preview == 'undefined') descObj.preview = {};
                                 descObj.preview[fbLink] = fbPreview || '';
-                                if (typeof descObj.public == 'undefined') descObj.public = {};
-                                descObj.public[fbLink] = fbPublic;
+                                if (typeof descObj.isPublic == 'undefined') descObj.isPublic = {};
+                                descObj.isPublic[fbLink] = fbPublic;
                                 if (typeof descObj.savedtime == 'undefined') descObj.savedtime = {};
                                 descObj.savedtime[fbLink] = (new Date()).getTime();
 

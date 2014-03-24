@@ -1,3 +1,8 @@
+/**
+ * @author Kami
+ * @since 2014.03.24.17:30
+ * @version 1.0.6
+ */
 var urlCheck;
 var SaveFbLater = {
     myStorage: null,
@@ -9,7 +14,7 @@ var SaveFbLater = {
         if (chrome.runtime.lastError) {
                console.log("ERROR: " + chrome.runtime.lastError.message);
         }
-        self.myStorage = o.fbSaveLater||{links:[],desc:{text: {}, src: {}, preview: {}, public: {}, savedtime: {}}};
+        self.myStorage = o.fbSaveLater||{links:[],desc:{text: {}, src: {}, preview: {}, isPublic: {}, savedtime: {}}};
         if (self.myStorage) self.initComplete = true;
         else self.initComplete = false;
 
@@ -95,8 +100,8 @@ var SaveFbLater = {
           var item = savedList[i];
           if (item != null && item != '') {
             var listEle = document.createElement('div');
-            if (  typeof descTable.public[item] != 'undefined'
-                  && parseInt(descTable.public[item]) !== 1
+            if (  typeof descTable.isPublic[item] != 'undefined'
+                  && parseInt(descTable.isPublic[item]) !== 1
                   && typeof descTable.preview[item] != 'undefined') {
               // if (parseInt(descTable.public[item]) < 0) {
               //   listEle.className = "_4q_ _6kq _2iwo _5usc fb-post";

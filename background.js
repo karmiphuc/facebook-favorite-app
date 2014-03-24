@@ -1,3 +1,7 @@
+/**
+ * @author Kami.2014.03.24.17:24
+ * @version 1.0.6
+ */
 chrome.contextMenus.create({"title": "List view", "onclick" : function() {
 		chrome.tabs.create({url:chrome.extension.getURL("list.html"),active:true});
 	}}, function() {
