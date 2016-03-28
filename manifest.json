@@ -4,7 +4,7 @@
   "name": "Facebook Favorite",
   "short_name": "FB Favorite",
   "description": "Save Facebook Posts for later usage.",
-  "version": "1.0.6",
+  "version": "1.0.6.3",
 
   "author": "Karmi Phuc",
   "permissions": [

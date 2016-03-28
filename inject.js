@@ -188,8 +188,8 @@ function injectLinks() {
                             ahref.setAttribute('data-preview', encodeURIComponent(htmlPreview));
                         }
 
-                        //var isPublic = document.querySelector('.sx_d601ff')?-1:(d.querySelector('.sx_25f2b2')?1:0);
-                        var isPublic = (href[0].href.indexOf('/groups/')>-1)?-1:(d.querySelector('.sx_25f2b2')?1:0);
+                        //var isPublic = document.querySelector('.sx_d601ff')?-1:(d.querySelector('.sx_25f2b2')?1:0);sx_d52e6e
+                        var isPublic = (href[0].href.indexOf('/groups/')>-1)?-1:(d.querySelector('.sx_25f2b2')?1:(d.querySelector('.sx_d52e6e')?1:0));
                         ahref.setAttribute('data-public', isPublic);
 
                         ahref.addEventListener('click', function (o, e) {
@@ -233,7 +233,10 @@ function injectLinks() {
                                     }
                                 });
                                 storage = {links: savedList, desc: descObj};
+                                chrome.runtime.sendMessage({total: savedList.length});
                             });
+                            
+                            
                             this.innerHTML = 'Saved';
                             this.className = 'fb-save-4-later saved';
                         }, true);

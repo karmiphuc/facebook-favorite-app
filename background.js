@@ -35,3 +35,11 @@ chrome.tabs.onUpdated.addListener(function(tabId , info) {
         }
     });
 });
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.total) {
+      chrome.browserAction.setBadgeBackgroundColor({ color: "#3af" });
+      chrome.browserAction.setBadgeText({text:''+parseInt(request.total)});
+    }
+});

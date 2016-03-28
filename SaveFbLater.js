@@ -1,14 +1,14 @@
 /**
  * @author Kami
  * @since 2014.03.24.17:30
- * @version 1.0.6
+ * @version 1.0.6.2
  */
 var urlCheck;
 var SaveFbLater = {
     myStorage: null,
     initComplete: null,
 
-    init: function(mode) {
+    init: function(mode, hash) {
       var self = this;
       chrome.storage.local.get('fbSaveLater', function(o) {
         if (chrome.runtime.lastError) {
@@ -18,22 +18,34 @@ var SaveFbLater = {
         if (self.myStorage) self.initComplete = true;
         else self.initComplete = false;
 
-        if (typeof mode == 'undefined' || mode != 'feed') self.getSavedList();
+        //self.toJson();
+        if (typeof mode == 'undefined' || (mode != 'feed' && mode != 'import')) self.getSavedList();
         else if (mode == 'feed') {
-          self.showFeed();
+          self.showFeed(hash);
         }
       });
+    },
+    
+    sync: function(){
+      chrome.storage.sync.set({
+            'fbSaveLater': this.myStorage
+        }, function (o) {
+            if (chrome.runtime.lastError) {
+                console.log("ERROR-SYNC: " + chrome.runtime.lastError.message);
+                alert('Sync failed: Too many data!');
+            }
+        });
     },
 
     updateStorage: function(newStorage) {
       if (typeof newStorage != 'undefined') this.myStorage = newStorage;
       chrome.storage.local.set({
-                                'fbSaveLater': this.myStorage
-                            }, function (o) {
-                                if (chrome.runtime.lastError) {
-                                    console.log("ERROR: " + chrome.runtime.lastError.message);
-                                }
-                            });
+            'fbSaveLater': this.myStorage
+        }, function (o) {
+            if (chrome.runtime.lastError) {
+                console.log("ERROR: " + chrome.runtime.lastError.message);
+            }
+        });
     },
 
     getSavedList: function() {
@@ -65,14 +77,17 @@ var SaveFbLater = {
             timestamp = 'saved on '+x.getFullYear()  + '/' + (x.getMonth()+1) + '/' +  x.getDate() + ' ' + x.getHours() + ":" + x.getMinutes();
           }
           if (timestamp === '') hideTimestamp = 'style="display:none;"';
-          listEle.innerHTML = '<div><div class="meta-author"><h2 class="post-title"><a class="meta-username" href="'+item+'" target="_blank">'+descUser+'</a></h2>\
+          listEle.innerHTML = '<span class="removeLnk">|</span><a target="_blank" href="https://getpocket.com/save?url='+encodeURIComponent(item)+'" class="pocket-btn removeLnk">Send to Pocket</a>\
+          <div><div class="meta-author">\
+          <h2 class="post-title"><a class="meta-username" href="'+item+'" target="_blank">'+descUser+'</a></h2>\
           <a href="'+item+'" target="_blank" class="timestamp" '+hideTimestamp+'>'+timestamp+'</a></div>\
           <div class="desc-text-wrapper message">'+descText+'</div></div>';
           // var descTextEle = document.createElement('div');
           // descTextEle.className = "desc-text-wrapper";
           // descTextEle.innerHTML = descText;
           // listEle.appendChild(descTextEle);
-          ulEle.appendChild(listEle);
+          // ulEle.appendChild(listEle);
+          ulEle.insertBefore(listEle, ulEle.firstChild);
           var removeItemBtn = document.createElement('a');
           removeItemBtn.href = "javascript:;";
           removeItemBtn.setAttribute("data-href",item);
@@ -85,9 +100,30 @@ var SaveFbLater = {
           listEle.insertBefore(removeItemBtn, listEle.firstChild);
         }
       };
+      var showmoreLinks = document.querySelectorAll('.text_exposed_link a');
+      if (showmoreLinks && showmoreLinks.length > 0) {
+        Array.prototype.forEach.call(showmoreLinks, function(el, i){
+          var parentDivId = el.getAttribute('onclick').match(/id_[a-zA-Z0-9]+/)[0];
+          el.setAttribute('data-parentId',parentDivId);
+          el.removeAttribute('href');//href="javascript:;";
+          el.removeAttribute('onclick');
+          el.addEventListener('click',function(o,e) {
+            //document.getElementById(this.getAttribute('data-parentId'))
+            var parentDivId = this.getAttribute('data-parentId');
+            document.getElementById('dynamic-style').innerHTML += '#'+parentDivId+' .text_exposed_hide{display: none !important}#'+parentDivId+' .text_exposed_show{display: inline !important}';
+            // var showLink = this.parentNode.parentNode;
+            // showLink.style.display = 'none';
+            // showLink.previousSibling.style.display = 'inline';
+            // var threeDots = showLink.previousSibling.previousSibling;
+            // if (threeDots.className == '').style.display = 'none';
+          });
+        });
+      }
+      chrome.browserAction.setBadgeBackgroundColor({ color: "#3af" });
+      chrome.browserAction.setBadgeText({text:''+len});
     },
 
-    showFeed: function() {
+    showFeed: function(timeHash) {
       var savedList = this.myStorage.links;
 
       var i = 0;
@@ -96,12 +132,29 @@ var SaveFbLater = {
       ulEle.innerHTML = '';
 
         var descTable = this.myStorage.desc;
+        var now = new Date();
         for (var i = 0; i < len; ++i) {
           var item = savedList[i];
+          // if ( typeof timeHash != 'undefined'
+          //   && (timeHash === "week" || timeHash === "month")) {
+          //     if ( typeof descTable.savedtime != 'undefined'
+          //     && typeof descTable.savedtime[item] != 'undefined') {
+          //       var x = new Date(parseInt(descTable.savedtime[item]));
+          //       switch(timeHash) {
+          //         case "week":
+          //           if (x < (now - 86400*1000*10)) continue;
+          //           break;
+          //         case "month":
+          //           if (x < (now - 86400*1000*30)) continue;
+          //           break;
+          //       }
+          //     } else continue;
+          // }
           if (item != null && item != '') {
             var listEle = document.createElement('div');
-            if (  typeof descTable.isPublic[item] != 'undefined'
-                  && parseInt(descTable.isPublic[item]) !== 1
+            if (  typeof descTable.isPublic != 'undefined'
+                  && typeof descTable.isPublic[item] != 'undefined'
+                  && (descTable.isPublic[item]) != 1
                   && typeof descTable.preview[item] != 'undefined') {
               // if (parseInt(descTable.public[item]) < 0) {
               //   listEle.className = "_4q_ _6kq _2iwo _5usc fb-post";
@@ -131,12 +184,16 @@ var SaveFbLater = {
             ulEle.appendChild(listEle);
           }
         };
+        chrome.browserAction.setBadgeBackgroundColor({ color: "#3af" });
+        chrome.browserAction.setBadgeText({text:''+len});
     },
 
-    clear: function() {
+    clear: function(mode) {
       chrome.storage.local.clear();
-      this.init();
-      document.getElementById('savedList').innerHTML = '';
+      this.init(mode);
+      chrome.browserAction.setBadgeText({text:'0'});
+      var savedListDom = document.getElementById('savedList');
+      if (savedListDom && savedListDom.length) savedListDom.innerHTML = '';
     },
 
     remove: function(itemToDel) {
@@ -144,6 +201,8 @@ var SaveFbLater = {
       if (index > -1) {
         this.myStorage.links.splice(index,1);
         this.updateStorage(this.myStorage);
+        chrome.browserAction.setBadgeBackgroundColor({ color: "#3af" });
+        chrome.browserAction.setBadgeText({text:''+this.myStorage.links.length});
         return true;
       } else return false;
     },
@@ -153,7 +212,24 @@ var SaveFbLater = {
     },
 
     populateNewTab: function(mode) {
-      if (typeof mode == 'undefined' || (mode != 'feed' && mode != 'list')) mode = 'feed';
+      if (typeof mode == 'undefined' || (mode != 'feed' && mode != 'list' && mode != 'import')) mode = 'feed';
       chrome.tabs.create({url:chrome.extension.getURL(mode+".html"),active:true});
+    },
+    
+    redirect: function(mode) {
+      if (typeof mode == 'undefined' || (mode != 'feed' && mode != 'list' && mode != 'import')) mode = 'feed';
+      chrome.tabs.update({url:chrome.extension.getURL(mode+".html"),active:true});
+    },
+
+    toJson: function() {
+      var exportLnk = document.getElementById('export');
+      exportLnk.href= 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.myStorage));
+      //return JSON.stringify(this.myStorage);
+    },
+    
+    importJson: function(data){
+      this.clear('import');
+      this.updateStorage(data);
+      this.redirect('list');
     }
   };

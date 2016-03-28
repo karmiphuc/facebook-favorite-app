@@ -140,6 +140,7 @@ display: block;
 width: 500px;
 height: auto;
 }
+.fb-post form{display:none !important;}
 #container {
  margin:100px auto 0 auto;
  width: 1295px;

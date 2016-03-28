@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Facebook Favorite - Save Facebook posts for later</title>
+    <title>Import JSON | Facebook Favorite extension</title>
     <link href="pure-min.css" rel="stylesheet" type="text/css">
     <link href="list.css" rel="stylesheet" type="text/css">
   </head>
@@ -34,10 +34,10 @@
                           <a id="getFeeds" class="button-lnk pure-button" href="#">Full Feeds</a>
                       </li>
                       <li class="nav-item">
-                          <a id="export" target="_blank" download="fbfavorite.json" class="button-lnk pure-button" href="#">Export</a>
+                          <a id="getList" class="button-lnk pure-button" href="#">Full List</a>
                       </li>
                       <li class="nav-item">
-                          <a id="import" class="button-lnk pure-button" href="#">Import</a>
+                          <a id="export" target="_blank" download="fbfavorite.json" class="button-lnk pure-button" href="#">Export</a>
                       </li>
                       <li class="nav-item">
                           <a class="pure-button" target="_blank" href="http://karmiphuc.com/tools/fbfavorite.html#footer">Support</a>
@@ -66,11 +66,14 @@
         </div>
       </div>
       <div id="container" class="list-content content pure-u-1 pure-u-med-3-4">
-        <div id="savedList"></div>
+        <div class="post pure-u-1-1">
+            <p><input type="file" id="importfile" name="importfile"></p>
+            <p><button id="btn-import" class="pure-button pure-button-primary" disabled="disabled">Import</button></p>
+        </div>
       </div>
     </div>
     <script type="text/javascript" src="SaveFbLater.js"></script>
-    <script type="text/javascript" src="list.js"></script>
+    <script type="text/javascript" src="import.js"></script>
     <style id="dynamic-style"></style>
   </body>
 </html>

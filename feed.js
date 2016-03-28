@@ -5,6 +5,10 @@
   http://www.gnu.org/copyleft/lesser.html
 */
 document.addEventListener('DOMContentLoaded', function(){
+  // var hash = window.location.hash.substr(1);
+  // if (hash !== "week" && hash !== "month") {
+  //   SaveFbLater.init('feed');
+  // } else SaveFbLater.init('feed',hash);
   SaveFbLater.init('feed');
   document.getElementById('clearCache').addEventListener('click',function(o, e) {
     if (confirm('Are you sure?')) SaveFbLater.clear();
