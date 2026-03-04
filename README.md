@@ -34,7 +34,7 @@ If you prefer a more beautiful way to read your posts, Facebook Favorite lets yo
 You can remove unwanted posts from Facebook Favorite by clicking the Remove text link next to them. If you want to clear all data, click the Clear Cache button.
 
 ### How to install Facebook Favorite
-To install Facebook Favorite into Google Chrome in under 5 seconds, [click here](https://chrome.google.com/webstore/detail/facebook-favorite/cklcfohlddckjakiohbpjbcfhbfboopl) to install it via Chrome WebStore.
+To install Facebook Favorite into Google Chrome in under 5 seconds, [click here](https://chromewebstore.google.com/detail/facebook-favorite/cklcfohlddckjakiohbpjbcfhbfboopl) to install it via Chrome WebStore.
 
 ### How to uninstall Facebook Favorite
 
