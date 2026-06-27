@@ -1,0 +1,63 @@
+name: Validate profile metadata
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-check:
+    name: Description + topics + leak guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch repo metadata via API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          META=$(gh api "repos/${REPO}" --jq '{description: .description, topics: [.topics[]]}')
+          echo "::group::Fetched metadata"
+          echo "${META}"
+          echo "::endgroup::"
+
+          DESC=$(echo "${META}" | jq -r '.description // ""')
+          TOPIC_COUNT=$(echo "${META}" | jq -r '.topics | length')
+
+          # Description checks
+          if [[ -z "${DESC}" || "${DESC}" == "null" ]]; then
+            echo "::error::Description is empty. Set one via: gh repo edit <owner>/<repo> --description '...'"
+            exit 1
+          fi
+          if [[ ${#DESC} -lt 20 ]]; then
+            echo "::error::Description too short (${#DESC} chars, min 20): '${DESC}'"
+            exit 1
+          fi
+          if [[ ! "${DESC}" =~ ^[A-Z] ]]; then
+            echo "::error::Description must start with a capital letter: '${DESC}'"
+            exit 1
+          fi
+
+          # Topic checks
+          if (( TOPIC_COUNT < 3 )); then
+            echo "::error::Need at least 3 topics (have ${TOPIC_COUNT}). Add via: gh repo edit <owner>/<repo> --add-topic foo"
+            exit 1
+          fi
+
+          # Internal-leak guard: block accidental exposure of internal/corporate language
+          LEAKS="company|bedrock|corporate|corp\\.|sanitized fork of a private|internal tool|not for distribution|do not share"
+          if [[ "${DESC,,}" =~ ${LEAKS} ]]; then
+            echo "::error::Description contains internal-leak phrase: '${DESC}'"
+            exit 1
+          fi
+          for t in $(echo "${META}" | jq -r '.topics[]'); do
+            if [[ "${t,,}" =~ ${LEAKS} ]]; then
+              echo "::error::Topic '${t}' matches internal-leak pattern"
+              exit 1
+            fi
+          done
+
+          echo "OK: description + topics passed all checks."
