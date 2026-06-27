@@ -1,0 +1,16 @@
+﻿# Generic noise allowlist for karmiphuc personal repos.
+[extend]
+useDefault = true
+[allowlist]
+paths = [
+  '''**/*.lock''',
+  '''**/*.png''',
+  '''**/*.jpg''',
+  '''**/*.svg''',
+  '''**/*.gif''',
+  '''LICENSE''',
+  '''LICENSE.md''',
+  '''LICENSE.txt''',
+  '''CHANGELOG*'''
+]
+description = "Generic allowlist: lockfiles, binaries, license files, changelogs"
