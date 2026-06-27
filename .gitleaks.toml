@@ -1,4 +1,4 @@
-﻿# Generic noise allowlist for karmiphuc personal repos.
+# Generic noise allowlist for karmiphuc personal repos.
 [extend]
 useDefault = true
 [allowlist]
